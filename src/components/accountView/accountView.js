@@ -17,15 +17,11 @@ const AccountView = ({ primaryClick }) => {
       <Row>
         <EmptyState className="full-page-blank-slate">
           <EmptyState.Icon />
-          <EmptyState.Title>Lorem Ipsum</EmptyState.Title>
-          <EmptyState.Info>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean commodo purus a sem ornare ullamcorper. Duis
-            sed mi mi. Aenean risus ante, hendrerit sed cursus nec, pharetra eu nisi. Nulla in dui id leo dapibus
-            malesuada eu placerat lacus. Phasellus pulvinar magna vel mattis commodo.
-          </EmptyState.Info>
+          <EmptyState.Title>Welcome to Cloud Meter</EmptyState.Title>
+          <EmptyState.Info>Add an AWS account to monitor usage.</EmptyState.Info>
           <EmptyState.Action>
             <Button bsStyle="primary" bsSize="large" onClick={primaryClick || handleClick}>
-              Dolor sit amet
+              Add Account
             </Button>
           </EmptyState.Action>
         </EmptyState>
