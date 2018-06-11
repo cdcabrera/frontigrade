@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Icon, Masthead as PfMasthead, MenuItem } from 'patternfly-react';
-import { reduxActions } from '../../redux';
+import { connect, reduxActions } from '../../redux';
 import helpers from '../../common/helpers';
 import titleImg from '../../styles/images/title.svg';
 

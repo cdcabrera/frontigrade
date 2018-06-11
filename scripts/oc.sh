@@ -12,21 +12,33 @@ setupUser()
   local USER_PASSWORD=$2
   local USER_ENDPOINT=$3
   local RESPONSE=""
+  local COUNT=1
+  local DELAY=1
+  local DURATION=30
 
   echo "Test user logging in..."
 
-  RESPONSE=$(curl -s -d "{\"username\":\"$USER_NAME\", \"password\":\"$USER_PASSWORD\"}" -H "Content-Type: application/json" -X POST $USER_ENDPOINT)
+  while [ $COUNT -le $DURATION ]; do
+    sleep $DELAY
+    (( COUNT++ ))
+    RESPONSE=$(curl -s -d "{\"username\":\"$USER_NAME\", \"password\":\"$USER_PASSWORD\"}" -H "Content-Type: application/json" -X POST $USER_ENDPOINT)
 
-  if [ "$RESPONSE" = "$CHECK_SUCCESS" ] || [ "$RESPONSE" = "$CHECK_EXISTS" ]; then
-    COLOR=$GREEN
-    STATUS="SUCCESS"
-  fi
+    if [ "$RESPONSE" = "$CHECK_SUCCESS" ] || [ "$RESPONSE" = "$CHECK_EXISTS" ]; then
+      COLOR=$GREEN
+      STATUS="SUCCESS"
+      break
+    fi
+  done
 
   echo "Response: "$RESPONSE | cut -c 1-100
 
-  printf "\n${COLOR}Test user ${STATUS}.\n"
+  printf "\n${COLOR}Test user ${STATUS} after ${COUNT} secs... continuing\n"
   printf "\n${COLOR}  username=${USER_NAME}"
   printf "\n${COLOR}  password=${USER_PASSWORD}${NOCOLOR}\n\n"
+
+  if [ "$STATUS" = "ERROR" ]; then
+    printf "\n${COLOR}  To access the API you'll need to create a user.${NOCOLOR}\n\n"
+  fi
 }
 #
 #
@@ -79,15 +91,27 @@ startOc()
     exit 0
   fi
 
-  if [ -z "$(docker -v)" ]; then
+  if [ -z "$(docker -v)" ] || [ ! -z "$(docker -v)" ] && [ ! -z "$(docker ps | grep -e 'docker daemon running')" ]; then
     printf "\n${RED}Docker Daemon missing.${NOCOLOR}\n"
     exit 0
   fi
 
   if [ -z "$(docker -v | grep -e ' 1.10' -e ' 1.12' -e ' 1.13')" ]; then
-    printf "\n${RED}Docker version currently running may cause cluster issues.${NOCOLOR}"
-    printf "\n  ${RED}See OpenShift documentation:${NOCOLOR} https://bit.ly/2JB7Kre\n"
+    printf "\n${RED}Docker version may cause cluster issues.${NOCOLOR}"
+
+    if [ -z "$(docker ps | grep -e 'docker daemon running')"  > /dev/null ]; then
+      #printf "\n${RED}Docker Daemon missing.${NOCOLOR}\n"
+      #exit 0
+      echo "RUNNING"
+    else
+      echo "NOT RUNNING"
+    fi
+    #else
+    #  printf "\n  ${RED}See OpenShift documentation:${NOCOLOR} https://bit.ly/2JB7Kre\n"
+    #fi
   fi
+
+  exit 0
 
   if [ -z "$(checkOc 1 | grep SUCCESS)" ] || [ "$UPDATE" = true ]; then
     oc cluster down

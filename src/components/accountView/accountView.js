@@ -1,14 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Button, EmptyState, Grid, Row } from 'patternfly-react';
-import { reduxTypes, store } from '../../redux';
+import { connect, reduxTypes, store } from '../../redux';
 
-const AccountView = ({ primaryClick }) => {
-  const handleClick = () => {
+const AccountView = () => {
+  const showAccountWizard = () => {
     store.dispatch({
-      type: reduxTypes.toastNotifications.TOAST_ADD,
-      alertType: 'success',
-      message: <span>Success dolor sit amet.</span>
+      type: reduxTypes.account.ADD_ACCOUNT_SHOW
     });
   };
 
@@ -20,7 +17,7 @@ const AccountView = ({ primaryClick }) => {
           <EmptyState.Title>Welcome to Cloud Meter</EmptyState.Title>
           <EmptyState.Info>Add an AWS account to monitor usage.</EmptyState.Info>
           <EmptyState.Action>
-            <Button bsStyle="primary" bsSize="large" onClick={primaryClick || handleClick}>
+            <Button bsStyle="primary" bsSize="large" onClick={showAccountWizard}>
               Add Account
             </Button>
           </EmptyState.Action>
@@ -30,12 +27,10 @@ const AccountView = ({ primaryClick }) => {
   );
 };
 
-AccountView.propTypes = {
-  primaryClick: PropTypes.func
-};
+AccountView.propTypes = {};
 
-AccountView.defaultProps = {
-  primaryClick: null
-};
+AccountView.defaultProps = {};
 
-export default AccountView;
+const mapStateToProps = state => ({ account: state.account });
+
+export default connect(mapStateToProps)(AccountView);
