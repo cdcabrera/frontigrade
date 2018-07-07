@@ -4,6 +4,16 @@
   }
 }
 
+.cloudmeter-fadein {
+  opacity:0;
+  animation:cloudmeter-fadein ease-in forwards;
+  animation-delay:.25s;
+}
+
+@keyframes cloudmeter-fadein {
+  0%{opacity:0} 100%{opacity:1}
+}
+
 // Setup for internal vertical scroll
 .cloudmeter-content {
   bottom: 0;

@@ -1,8 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { translate } from 'react-i18next';
 import { Button, Card, Form, Grid } from 'patternfly-react';
 import { connect, reduxActions } from '../../redux';
 import { fieldValidation } from '../formField/formField';
+import I18nDropdown from '../i18n/i18n';
 import helpers from '../../common/helpers';
 import titleImg from '../../styles/images/title.svg';
 
@@ -40,7 +42,9 @@ class Authentication extends React.Component {
   }
 
   componentDidMount() {
-    const { session, checkUser, storeData } = this.props;
+    const { session, checkUser, storeData, availableLocales } = this.props;
+
+    availableLocales();
 
     if (!session.authorized) {
       checkUser();
@@ -78,10 +82,10 @@ class Authentication extends React.Component {
 
   onChangeRemember = event => {
     const { checked } = event.target;
-    const { removeStoredData } = this.props;
+    const { storeEmail } = this.props;
 
     if (!checked) {
-      removeStoredData().then(() =>
+      storeEmail(null).then(() =>
         this.setState({
           remember: checked
         })
@@ -95,7 +99,7 @@ class Authentication extends React.Component {
 
   onLogin = event => {
     const { email, password, remember, formValid } = this.state;
-    const { checkUser, loginUser, removeStoredData, storeData } = this.props;
+    const { checkUser, loginUser, storeEmail } = this.props;
 
     event.preventDefault();
 
@@ -112,14 +116,14 @@ class Authentication extends React.Component {
             password
           }).then(() => {
             if (remember) {
-              storeData({ email });
+              storeEmail(email);
             } else {
               this.setState(
                 {
                   email: '',
                   emailError: null
                 },
-                () => removeStoredData()
+                () => storeEmail(null)
               );
             }
 
@@ -151,15 +155,16 @@ class Authentication extends React.Component {
 
   renderLogin() {
     const { email, emailError, formTouched, password, passwordError, remember } = this.state;
-    const { session } = this.props;
+    const { session, t } = this.props;
 
     return (
       <Card className="cloudmeter-login-card">
         <header className="login-pf-header">
+          <I18nDropdown />
           <select className="selectpicker">
             <option>English</option>
           </select>
-          <h1>Log In to Your Account</h1>
+          <h1>{t('authentication.title', 'Log In to Your Account')}</h1>
         </header>
         <Card.Body>
           <Form method="post" autoComplete={remember ? 'on' : 'off'} onSubmit={this.onLogin}>
@@ -225,7 +230,7 @@ class Authentication extends React.Component {
     }
 
     return (
-      <div className="login-pf cloudmeter-login fadein">
+      <div className="login-pf cloudmeter-login cloudmeter-fadein">
         <div className="login-pf-page cloudmeter-login-body">
           <div className="container-fluid">
             <Grid.Row>
@@ -249,10 +254,10 @@ class Authentication extends React.Component {
 }
 
 Authentication.propTypes = {
+  t: PropTypes.func,
   checkUser: PropTypes.func,
   children: PropTypes.node.isRequired,
   loginUser: PropTypes.func,
-  removeStoredData: PropTypes.func,
   session: PropTypes.shape({
     error: PropTypes.bool,
     loginFailed: PropTypes.bool,
@@ -261,22 +266,27 @@ Authentication.propTypes = {
     storedEmail: PropTypes.string,
     remember: PropTypes.bool
   }),
-  storeData: PropTypes.func
+  storeData: PropTypes.func,
+  storeEmail: PropTypes.func,
+  availableLocales: PropTypes.func
 };
 
 Authentication.defaultProps = {
+  t: helpers.noop,
   checkUser: helpers.noop,
   loginUser: helpers.noop,
-  removeStoredData: helpers.noop,
   session: {},
-  storeData: helpers.noop
+  storeData: helpers.noop,
+  storeEmail: helpers.noop,
+  availableLocales: helpers.noop
 };
 
 const mapDispatchToProps = dispatch => ({
   checkUser: () => dispatch(reduxActions.user.checkUser()),
   loginUser: data => dispatch(reduxActions.user.loginUser(data)),
   storeData: data => dispatch(reduxActions.user.storeData(data)),
-  removeStoredData: () => dispatch(reduxActions.user.removeStoredData())
+  storeEmail: email => dispatch(reduxActions.user.storeEmail(email)),
+  availableLocales: () => dispatch(reduxActions.user.availableLocales())
 });
 
 const mapStateToProps = state => ({ session: state.user.session });
@@ -284,6 +294,6 @@ const mapStateToProps = state => ({ session: state.user.session });
 const ConnectedAuthentication = connect(
   mapStateToProps,
   mapDispatchToProps
-)(Authentication);
+)(translate('default')(Authentication));
 
 export { ConnectedAuthentication as default, ConnectedAuthentication, Authentication };

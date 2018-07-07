@@ -4,6 +4,21 @@ import _ from 'lodash';
 import serviceConfig from './index';
 
 /**
+ * Return a list of available locales.
+ * @returns {Promise}
+ */
+const availableLocales = () =>
+  axios(
+    serviceConfig(
+      {
+        method: 'get',
+        url: process.env.REACT_APP_CONFIG_SERVICE_LOCALES
+      },
+      false
+    )
+  );
+
+/**
  * @api {get} /auth/me/ User information
  * @apiHeader {String} Authorization Authorization: Token AUTH_TOKEN
  * @apiSuccess {String} email
@@ -187,4 +202,4 @@ const storeData = (data, remove = false, config = { extend: true }) =>
  */
 const removeStoredData = () => storeData(null, true);
 
-export { checkUser, createUser, deleteUser, loginUser, logoutUser, storeData, removeStoredData };
+export { availableLocales, checkUser, createUser, deleteUser, loginUser, logoutUser, storeData, removeStoredData };

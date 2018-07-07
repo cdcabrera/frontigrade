@@ -85,7 +85,8 @@
     "redux-logger": "^3.0.6",
     "redux-promise-middleware": "^5.1.1",
     "redux-thunk": "^2.3.0",
-    "prop-types": "^15.6.2"
+    "prop-types": "^15.6.2",
+    "wordigrade": "https://github.com/cloudigrade/wordigrade#master"
   },
   "devDependencies": {
     "enzyme": "^3.3.0",

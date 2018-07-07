@@ -1,6 +1,11 @@
 import { userTypes } from '../constants';
 import { userServices } from '../../services/';
 
+const availableLocales = () => ({
+  type: userTypes.USER_LOCALES,
+  payload: userServices.availableLocales()
+});
+
 const checkUser = () => ({
   type: userTypes.USER_INFO,
   payload: userServices.checkUser()
@@ -40,4 +45,19 @@ const storeData = data => dispatch =>
     payload: userServices.storeData(data)
   });
 
-export { checkUser, createUser, deleteUser, loginUser, logoutUser, removeStoredData, storeData };
+const storeEmail = email => storeData({ email });
+
+const storeLocale = (locale, localeVersion) => storeData({ locale, localeVersion });
+
+export {
+  availableLocales,
+  checkUser,
+  createUser,
+  deleteUser,
+  loginUser,
+  logoutUser,
+  removeStoredData,
+  storeData,
+  storeEmail,
+  storeLocale
+};

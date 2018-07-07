@@ -12,7 +12,10 @@ const initialState = {
     remember: false,
     storedEmail: null,
     username: null,
-    email: null
+    email: null,
+    locale: null,
+    localeVersion: null,
+    availableLocales: []
   },
   user: {
     error: false,
@@ -126,13 +129,15 @@ const userReducers = (state = initialState, action) => {
         'session',
         {
           fulfilled: true,
-          authorized: true,
-          remember: state.session.remember,
-          storedEmail: state.session.storedEmail
+          authorized: true
+          // remember: state.session.remember,
+          // storedEmail: state.session.storedEmail,
+          // locale: state.session.locale
         },
         {
           state,
-          initialState
+          // initialState
+          reset: false
         }
       );
 
@@ -140,26 +145,31 @@ const userReducers = (state = initialState, action) => {
       return helpers.setStateProp(
         'session',
         {
-          authorized: false,
-          remember: state.session.remember,
-          storedEmail: state.session.storedEmail
+          authorized: false
+          // remember: state.session.remember,
+          // storedEmail: state.session.storedEmail,
+          // locale: state.session.locale
         },
         {
           state,
-          initialState
+          // initialState
+          reset: false
         }
       );
 
     case helpers.FULFILLED_ACTION(userTypes.USER_STORED_DATA):
+      // debugger;
       return helpers.setStateProp(
         'session',
         {
-          remember: true,
-          storedEmail: action.payload.email
+          remember: action.payload.email && action.payload.email !== '',
+          storedEmail: action.payload.email,
+          locale: action.payload.locale,
+          localeVersion: action.payload.localeVersion
         },
         {
           state,
-          initialState
+          reset: false
         }
       );
 
@@ -168,11 +178,25 @@ const userReducers = (state = initialState, action) => {
         'session',
         {
           remember: false,
-          storedEmail: null
+          storedEmail: null,
+          locale: null,
+          localeVersion: null
         },
         {
           state,
-          initialState
+          reset: false
+        }
+      );
+
+    case helpers.FULFILLED_ACTION(userTypes.USER_LOCALES):
+      return helpers.setStateProp(
+        'session',
+        {
+          availableLocales: action.payload.data && action.payload.data.locales
+        },
+        {
+          state,
+          reset: false
         }
       );
 

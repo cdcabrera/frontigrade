@@ -22,7 +22,7 @@ class Router extends React.Component {
     const { renderRoutes, redirectRoot } = Router.renderRoutes();
 
     return (
-      <div className="cloudmeter-content">
+      <div className="cloudmeter-content cloudmeter-fadein">
         <Switch>
           {renderRoutes}
           {redirectRoot}
