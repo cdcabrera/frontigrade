@@ -97,11 +97,11 @@ const DEV_MODE = process.env.REACT_APP_ENV === 'development';
 
 const OC_MODE = process.env.REACT_APP_ENV === 'oc';
 
-const FULFILLED_ACTION = base => `${base}_FULFILLED`;
+const FULFILLED_ACTION = (base = '') => `${base}_FULFILLED`;
 
-const PENDING_ACTION = base => `${base}_PENDING`;
+const PENDING_ACTION = (base = '') => `${base}_PENDING`;
 
-const REJECTED_ACTION = base => `${base}_REJECTED`;
+const REJECTED_ACTION = (base = '') => `${base}_REJECTED`;
 
 const helpers = {
   generateId,

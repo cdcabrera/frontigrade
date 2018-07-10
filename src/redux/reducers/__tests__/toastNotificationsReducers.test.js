@@ -1,5 +1,6 @@
 import { toastNotificationsReducers } from '../';
 import { toastNotificationTypes } from '../../constants';
+import helpers from '../../../common/helpers';
 
 describe('ToastNotificationsReducers', () => {
   it('should return the initial state', () => {
@@ -46,5 +47,33 @@ describe('ToastNotificationsReducers', () => {
     resultState = toastNotificationsReducers(undefined, dispatched);
 
     expect(resultState.paused).toBeFalsy();
+  });
+
+  it('should handle any promise "[type]_REJECTED" types plus 5XX/undefined API errors', () => {
+    let dispatched = {
+      type: helpers.REJECTED_ACTION('TEST_TYPE'),
+      error: true,
+      payload: {
+        message: 'Network Error',
+        status: undefined
+      }
+    };
+
+    let resultState = toastNotificationsReducers(undefined, dispatched);
+
+    expect({ type: helpers.REJECTED_ACTION('TEST_TYPE'), result: resultState }).toMatchSnapshot('rejected type');
+
+    dispatched = {
+      type: helpers.REJECTED_ACTION('TEST_TYPE'),
+      error: true,
+      payload: {
+        message: 'Network Error',
+        status: 503
+      }
+    };
+
+    resultState = toastNotificationsReducers(undefined, dispatched);
+
+    expect({ type: helpers.REJECTED_ACTION('TEST_TYPE'), result: resultState }).toMatchSnapshot('503 rejected type');
   });
 });

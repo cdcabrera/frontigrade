@@ -1,4 +1,5 @@
 import { toastNotificationTypes } from '../constants';
+import helpers from '../../common/helpers';
 
 const initialState = {
   toasts: [],
@@ -57,6 +58,27 @@ const toastNotificationsReducers = (state = initialState, action) => {
       };
 
     default:
+      if (new RegExp(helpers.REJECTED_ACTION(), 'i').test(action.type)) {
+        const httpStatus = helpers.getStatusFromResults(action.payload);
+
+        if (httpStatus === 0 || httpStatus >= 500) {
+          const applicationToast = {
+            header: 'Error',
+            message: helpers.getErrorMessageFromResults(action.payload),
+            alertType: 'error',
+            persistent: true
+          };
+
+          return {
+            ...state,
+            ...{
+              toasts: [...state.toasts, applicationToast],
+              displayedToasts: state.displayedToasts + 1
+            }
+          };
+        }
+      }
+
       return state;
   }
 };
